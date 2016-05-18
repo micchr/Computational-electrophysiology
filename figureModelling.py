@@ -11,13 +11,14 @@ from detect_peaks import detect_peaks
 
 close('all')
 
-# the following represent the temperature issues I have had to take account because the recording have been made 
-# at room temperature (22 C), and I wanted to model the neurons activity at physiological temperature (37 C)
+# the following represent the temperature issues to take account the recording have been made 
+# at room temperature (22 C), and to model the neurons activity at physiological temperature (37 C)
 celsius = 37
 q10 = 3**((celsius - 22)/10)
 q10_Ihf = 3**((celsius - 22)/10) # temperature adaptation for the fast component
-q10_Ihs = 3**((celsius - 22)/10) # temperature adaptation for the slow component
+q10_Ihs = 3**((celsius - 22)/10) # temperature adaptation for the slow component (in some case, it can be different)
 
+####################
 # the recording have been made on vestibular neurons so the neuron model has to reproduce their 
 # electrophysiological pattern to be meaningfull. The vestibular neuron model is constructed with known 
 # ionic channel, I had only had to adjust the maximal conductance to obtain correct vestibular models
@@ -49,7 +50,6 @@ trf  = lambda v: (69+265*exp(-((-80-v)**2)/(31**2)))/q10_Ihf
 ### channel activity ###
 v = arange(-150,51) # mV
 
-## HH Parameters
 # the maximal conductances have been settled to reproduce the electrophysiological patterns of actual 
 # vestibular neurons
 V_rest  = -67     # mV
@@ -58,7 +58,7 @@ gbar_Na = 1000
 gbar_KH = 140
 gbar_KL = 0
 
-# reversal potentials of ionic channels and leak
+# Reversal potentials of ionic channels and leak
 gbar_l  = 2       # nS
 E_Na    = 50      # mV
 E_K     = -70     # mV
