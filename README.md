@@ -1,6 +1,6 @@
 # Electrophysiological-activity
 
-This one shows the highlights the algorithm allowed, when applied to the vestibular hyperpolarization activated ionic currents known to consist of two components.
+This project shows the highlights the algorithm allowed, when applied to the vestibular hyperpolarization activated ionic currents known to consist of two components.
 
 The algorithm revealed the presence of a high-voltage-activated slow component and a low-voltage-activated fast component. Moreover, the electrophysiological significance of these two Ih components was tested individually in computational vestibular ganglion neuron models (sustained and transient), in the control case and in the presence of cAMP, an intracellular cyclic nucleotide that modulates HCN channel activity.
 
