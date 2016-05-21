@@ -21,7 +21,7 @@ q10_Ihs = 3**((celsius - 22)/10) # temperature adaptation for the slow component
 ####################
 # the recording have been made on vestibular neurons so the neuron model has to reproduce their 
 # electrophysiological pattern to be meaningfull. The vestibular neuron model is constructed with known 
-# ionic channel, I had only had to adjust the maximal conductance to obtain correct vestibular models
+# ionic channel, I had only had to adjust the maximal conductances to obtain correct vestibular models
 # (reproducing both transient and sustained activity in the paper, here only sustained)
 # Na channel (activation)
 m_inf   = lambda v: 1/(1+exp(-(v + 38)/7))
