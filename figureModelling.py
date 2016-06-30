@@ -1,7 +1,7 @@
-# in vestibular ganglion neurons.
-# The code has partly served to construct the last figure of the paper
 # This file presents the last part of a study published in Michel CB et al., Eur J Neurosci. 2015 Nov;42(10):2867-77. 
 # doi: 10.1111/ejn.13021. Epub 2015 Aug 6. Identification and modelling of fast and slow Ih current components 
+# in vestibular ganglion neurons.
+# The code has partly served to construct the last figure of the paper
 
 from __future__ import division
 from numpy import *
@@ -11,9 +11,9 @@ from detect_peaks import detect_peaks
 
 close('all')
 
-celsius = 37
 # the following represent the temperature issues to take account the recording have been made 
 # at room temperature (22 C), and to model the neurons activity at physiological temperature (37 C)
+celsius = 37
 q10 = 3**((celsius - 22)/10)
 q10_Ihf = 3**((celsius - 22)/10) # temperature adaptation for the fast component
 q10_Ihs = 3**((celsius - 22)/10) # temperature adaptation for the slow component (in some case, it can be different)
@@ -67,11 +67,10 @@ E_h     = -43     # mV
 E_l     = -67     # mV
 
 ## Simulate Model
-
+# ode representing the openning and closing of each conductance involved in the vestibular neuron 
+# electrophysiological activity (following Hodgkin-Huxley formalism)
+# sodium gate
 def RMsolve(x,t):
-  # ode representing the openning and closing of each conductance involved in the vestibular neuron 
-  # electrophysiological activity (following Hodgkin-Huxley formalism)
-  # sodium gate
   dx0 = (m_inf(x[8]) - x[0])/tm_inf(x[8])
   dx1 = (h_inf(x[8]) - x[1])/th_inf(x[8])
   # KH gate (high voltage activated potassium channel)
@@ -117,34 +116,36 @@ figure(1,facecolor=[1,1,1], figsize=(8, 9))
 rc('font',size=9)
 rcParams['mathtext.default'] = 'regular'
 
+# a triple loop is launched to present the response of the channels for 3 different stimulation durations (loop l)
+# and two different stimulation amplitudes (loop j) for both Ih components (loop k)
 for k in [1,2]:
-  # a triple loop is launched to present the response of the channels for 3 different stimulation durations (loop l)
-  # and two different stimulation amplitudes (loop j) for both Ih components (loop k)
+	
   for j in [1,2]:
 
     subplot(3,4,4*(k-1)+j)
     hold
-
-    NbTest = 3
     # loop on the amplitude and duration current stimulation
+
+    # loop on the amplitude and duration current stimulation
+    NbTest = 3
     for l in arange(1,NbTest+1):
     	
-      Istim = zeros(len(time))
       # current clamp negative stimulations (se paper for duration and amplitude physiological relevence) 
+      Istim = zeros(len(time))
       Imax = -250-50*(j-1) # amplitude setting
       Istim[50/Te:(50+l*60)/Te] = Imax # duration setting
             
+      # here the choice is made of the Ih conductance component activated
+      # fast component (the slow one is settled to 0)
       if k == 1:
-      	# here the choice is made of the Ih conductance component activated
-      	# fast component (the slow one is settled to 0)
         gbar_hf = 3.43
         gbar_hs = 0
         text(50,90,r'$G_{hf}$ = '+str(gbar_hf)+' nS')
           
         xticks(arange(0,350,50))
 
+      # slow component (the fast one is settled to 0)
       elif k == 2:
-      	# slow component (the fast one is settled to 0)
         gbar_hf = 0
         gbar_hs = 3.34
         text(50,90,r'$G_{hs}$ = '+str(gbar_hs)+' nS')
@@ -154,9 +155,9 @@ for k in [1,2]:
       text(80,-180,'$I_{max}$ = '+str(int(round(Imax)))+' pA')
 
       y1 = odeint(RMsolve, X0, time)
-	  
+	
+      # color choice for clear result display  
       if l==1:
-      	# color choice for clear result display
         plot(time,y1[:,8],color=[0.6,0.6,0.6])
         plot(time,-Istim/Imax*15-220,color=[0.6,0.6,0.6]) 
       if l==2:
