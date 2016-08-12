@@ -1,30 +1,30 @@
-# This file presents the last part of a study published in Michel CB et al., Eur J Neurosci. 2015 Nov;42(10):2867-77. 
-# doi: 10.1111/ejn.13021. Epub 2015 Aug 6. Identification and modelling of fast and slow Ih current components 
-# in vestibular ganglion neurons.
-# The code has partly served to construct the last figure of the paper
-
 from __future__ import division
 from numpy import *
 from pylab import *
 from scipy.integrate import odeint
 from detect_peaks import detect_peaks
 
+# This file presents the last part of a study published in Michel CB et al., Eur J Neurosci. 2015 Nov;42(10):2867-77. 
+# doi: 10.1111/ejn.13021. Epub 2015 Aug 6. Identification and modelling of fast and slow Ih current components 
+# in vestibular ganglion neurons.
+# The code has partly served to construct the last figure of the paper
+
 close('all')
 
+celsius = 37
 # the following represent the temperature issues to take account the recording have been made 
 # at room temperature (22 C), and to model the neurons activity at physiological temperature (37 C)
-celsius = 37
 q10 = 3**((celsius - 22)/10)
 q10_Ihf = 3**((celsius - 22)/10) # temperature adaptation for the fast component
 q10_Ihs = 3**((celsius - 22)/10) # temperature adaptation for the slow component (in some case, it can be different)
 
+####################
 # the recording have been made on vestibular neurons so the neuron model has to reproduce their 
 # electrophysiological pattern to be meaningfull. The vestibular neuron model is constructed with known 
 # ionic channel, I had only had to adjust the maximal conductances to obtain correct vestibular models
 # (reproducing both transient and sustained activity in the paper, here only sustained)
-####################
-
 # Na channel (activation)
+
 m_inf   = lambda v: 1/(1+exp(-(v + 38)/7))
 tm_inf  = lambda v: (10/(5*exp((v + 60)/18) + 36*exp(-(v + 60)/25)) + 0.04)/q10
 h_inf   = lambda v: 1/(1+exp((v + 65)/6))
@@ -51,37 +51,41 @@ trf  = lambda v: (69+265*exp(-((-80-v)**2)/(31**2)))/q10_Ihf
 ### channel activity ###
 v = arange(-150,51) # mV
 
-V_rest  = -67     # mV
 # the maximal conductances have been settled to reproduce the electrophysiological patterns of actual 
 # vestibular neurons
+V_rest  = -67     # mV
 Cm      = 1      # pF
 gbar_Na = 1000
 gbar_KH = 140
 gbar_KL = 0
 
-gbar_l  = 2       # nS
 # Reversal potentials of ionic channels and leak
+gbar_l  = 2       # nS
 E_Na    = 50      # mV
 E_K     = -70     # mV
 E_h     = -43     # mV
 E_l     = -67     # mV
 
 ## Simulate Model
-# ode representing the openning and closing of each conductance involved in the vestibular neuron 
-# electrophysiological activity (following Hodgkin-Huxley formalism)
-# sodium gate
 def RMsolve(x,t):
+  # ode representing the openning and closing of each conductance involved in the vestibular neuron 
+  # electrophysiological activity (following Hodgkin-Huxley formalism)
+  
   dx0 = (m_inf(x[8]) - x[0])/tm_inf(x[8])
   dx1 = (h_inf(x[8]) - x[1])/th_inf(x[8])
-  # KH gate (high voltage activated potassium channel)
+  # sodium gate
+
   dx2 = (n_inf(x[8]) - x[2])/tn_inf(x[8])
   dx3 = (p_inf(x[8]) - x[3])/tp_inf(x[8])
-  # KH gate (low voltage activated potassium channel)
+  # KH gate (high voltage activated potassium channel)
+
   dx4 = (w_inf(x[8]) - x[4])/tw_inf(x[8])
   dx5 = (z_inf(x[8]) - x[5])/tz_inf(x[8])
-  # hyperpolarization activated cation channels gate
+  # KH gate (low voltage activated potassium channel)
+
   dx6 = (rs_inf(x[8]) - x[6])/trs(x[8])
   dx7 = (rf_inf(x[8]) - x[7])/trf(x[8])
+  # hyperpolarization activated cation channels gate
 
   # associated currents
   I_Na = gbar_Na*(x[0]**3)*x[1]*(x[8] - E_Na)
@@ -91,14 +95,14 @@ def RMsolve(x,t):
   I_hf = gbar_hf*x[7]*(x[8] - E_h)
   I_l = gbar_l*(x[8] - E_l)
   
-  # current clamp stimulation
   if int(t/Te) < len(time):
     I = int(t/Te)
   else:
     I = len(time)-1
-  
-  # potential variations
+  # current clamp stimulation
+
   dx8 = (Istim[I] - I_Na - I_KH - I_KL - I_hs - I_hf - I_l) / Cm
+  # potential variations
 
   return [dx0, dx1, dx2, dx3, dx4, dx5, dx6, dx7, dx8]
 
